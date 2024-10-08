@@ -1,0 +1,2 @@
+shato_yaw
+-DCATKIN_DEVEL_PREFIX=/home/hazem/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/hazem/catkin_ws/install -G Unix Makefiles
