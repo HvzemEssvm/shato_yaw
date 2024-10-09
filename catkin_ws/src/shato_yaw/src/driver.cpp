@@ -1,9 +1,12 @@
 /** Editor: Hazem Essam
   * 
-  * Purpose: This driver cpp code takes the desired angle from the user (-180°≤yaw≤+180°)
+  * Purpose: 
+  * 1. This driver cpp code takes the desired angle from the user (-180°≤yaw≤+180°)
   * and publishes it on a topic named "Destination_Topic" to be subscribed on by the PID class 
   * also, it handles the invalid input as shown below.
-  * 
+  * 2. It Takes The <Kp, Ki and Kd> from user and publishes them on a topic to be subscribed on by the pid system and used later on
+  * 3. It Subscribes to a topic named <yaw_angle> which takes the value returned by the BNO055
+  *
   * Remember to add the following in the CMakeLists.txt file:
   *
   * (catkin REQUIRED COMPONENTS
@@ -34,12 +37,18 @@
 float kp=2, ki=0.02,kd=0.011;
 char confirm;
 
+void yawCallBack(const std_msgs::Float32::ConstPtr& msg)
+{
+    ROS_INFO("Current Angle: %f°", msg->data);
+}
+
 int main(int argc, char **argv)
 {
     ros::init(argc,argv,"Driver");
     ros::NodeHandle nd;
     ros::Publisher driver = nd.advertise<std_msgs::Float32>("Destination_Topic", 1000);
     ros::Publisher pidPub = nd.advertise<std_msgs::Float32MultiArray>("pid_tuning",1000);
+    ros::Subscriber yawSub = nd.subscribe("yaw_angle", 1000, yawCallBack);
     ros::Rate loop_rate(1);
     std_msgs::Float32 angle;
     std_msgs::Float32MultiArray pid_params;
